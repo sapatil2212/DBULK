@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --background: #ffffff;
+  --foreground: #111111;
+  --muted-foreground: #666666;
+  --border: #eaeaea;
+  --background-secondary: #f5f5f5;
+  --highlight-background: #f8fafc;
+  --input-background: #ffffff;
+  --input-background-disabled: #f5f5f5;
+  --card-background: #ffffff;
+  --card-border: #eaeaea;
+  --primary: #25D366;
+  --primary-hover: #22c55e;
+  --primary-background: rgba(37, 211, 102, 0.1);
+  --error: #ef4444;
+  --success: #22c55e;
+  --warning: #f97316;
+  --info: #3b82f6;
+  
+  /* Shadow variables */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+
+  /* Animation variables */
+  --transition-fast: 0.15s ease;
+  --transition-medium: 0.3s ease;
+  
+  /* Font variables */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.dark {
+  --background: #111111;
+  --foreground: #f8f8f8;
+  --muted-foreground: #a1a1a1;
+  --border: #333333;
+  --background-secondary: #1a1a1a;
+  --highlight-background: #1a1a1a;
+  --input-background: #1a1a1a;
+  --input-background-disabled: #222222;
+  --card-background: #1a1a1a;
+  --card-border: #333333;
+  --primary: #25D366;
+  --primary-hover: #22c55e;
+  --primary-background: rgba(37, 211, 102, 0.08);
+  --error: #ef4444;
+  --success: #22c55e;
+  --warning: #f97316;
+  --info: #3b82f6;
+
+  /* Shadow variables - darker for dark mode */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* Base font and styling */
+html, body {
+  font-family: var(--font-sans);
+}
+
+/* Apply font throughout the app */
+* {
+  font-family: var(--font-sans);
+}
+
+/* Apply dark mode background to the root */
+.dark body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Modern light/dark mode transition */
+*, *::before, *::after {
+  transition: background-color var(--transition-medium),
+              border-color var(--transition-medium),
+              color var(--transition-medium);
+}
+
+/* Sidebar menu item styles */
+.sidebar-menu-item {
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-menu-item:hover:not(.active) {
+  background-color: var(--background-secondary);
+}
+
+/* Shimmer effect for buttons */
+.shimmer-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  transition: none;
+}
+
+.shimmer-button:hover::after {
+  transform: translateX(100%);
+  transition: transform 0.6s ease;
+}

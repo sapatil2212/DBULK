@@ -1,26 +1,169 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-google-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  --radius: 1rem;
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --primary: 142.1 70.6% 45.3%;  /* WhatsApp Green #25D366 */
+  --primary-foreground: 60 9.1% 97.8%;
+  --secondary: 215 27.9% 16.9%;  /* Dark Slate */
+  --secondary-foreground: 210 20% 98%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --accent: 142.1 70.6% 45.3%;  /* WhatsApp Green tint */
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --ring: 142.1 76.2% 36.3%;  /* WhatsApp Green darker */
+  
+  --success: 142.1 70.6% 45.3%;
+  --success-foreground: 60 9.1% 97.8%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 60 9.1% 97.8%;
+  --info: 208 100% 50%;
+  --info-foreground: 60 9.1% 97.8%;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --background: 215 28% 17%;
+  --foreground: 210 20% 98%;
+  --card: 224 71% 4%;
+  --card-foreground: 213 31% 91%;
+  --popover: 224 71% 4%;
+  --popover-foreground: 215 20.2% 65.1%;
+  --primary: 142.1 70.6% 45.3%;  /* WhatsApp Green #25D366 */
+  --primary-foreground: 60 9.1% 97.8%;
+  --secondary: 215 27.9% 26.9%;  /* Dark Slate - lighter */
+  --secondary-foreground: 210 20% 98%;
+  --muted: 215 27.9% 16.9%;
+  --muted-foreground: 217.9 10.6% 64.9%;
+  --accent: 142.1 70.6% 35.3%;  /* WhatsApp Green darker */
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 62.8% 50.6%;
+  --destructive-foreground: 210 20% 98%;
+  --border: 215 27.9% 16.9%;
+  --input: 215 27.9% 16.9%;
+  --ring: 142.1 76.2% 36.3%;  /* WhatsApp Green darker */
+  
+  --success: 142.1 70.6% 45.3%;
+  --success-foreground: 60 9.1% 97.8%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 60 9.1% 97.8%;
+  --info: 208 100% 50%;
+  --info-foreground: 60 9.1% 97.8%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+    outline: none;
   }
-}
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-google-sans);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-google-sans);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+  h1 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @media (min-width: 1024px) {
+    h1 {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+    }
+  }
+  h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    h2 {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+    }
+  }
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  @media (min-width: 1024px) {
+    h3 {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+  }
+  p {
+    line-height: 1.625;
+  }
+  
+  /* Focus ring styles */
+  .focus-visible {
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+    --tw-ring-color: hsl(var(--ring));
+    --tw-ring-offset-width: 2px;
+    --tw-ring-offset-color: hsl(var(--background));
+    outline: none;
+  }
+  
+  /* Glassmorphism */
+  .glass {
+    background-color: hsl(var(--background) / 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+  
+  /* Card hover animation */
+  .card-hover {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+
+  .card-hover:hover {
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    transform: translateY(-2px);
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: hsl(var(--muted));
+    border-radius: 9999px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.4);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.6);
+  }
 }

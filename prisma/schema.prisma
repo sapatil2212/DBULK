@@ -1,0 +1,577 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum UserRole {
+  SUPER_ADMIN
+  CLIENT_ADMIN
+  CLIENT_USER
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum OTPType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  TWO_FACTOR
+}
+
+enum OTPStatus {
+  PENDING
+  USED
+  EXPIRED
+}
+
+enum WhatsAppAccountStatus {
+  PENDING
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+enum TemplateStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TemplateCategory {
+  MARKETING
+  UTILITY
+  AUTHENTICATION
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  QUEUED
+  RUNNING
+  PAUSED
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+enum ConversationCategory {
+  MARKETING
+  UTILITY
+  AUTHENTICATION
+  SERVICE
+}
+
+enum AuditAction {
+  LOGIN
+  LOGOUT
+  SIGNUP
+  OTP_SENT
+  OTP_VERIFIED
+  PASSWORD_RESET
+  WHATSAPP_CONNECTED
+  WHATSAPP_DISCONNECTED
+  TEMPLATE_CREATED
+  TEMPLATE_SUBMITTED
+  CAMPAIGN_CREATED
+  CAMPAIGN_STARTED
+  SETTINGS_UPDATED
+}
+
+// ==================== MODELS ====================
+
+model Tenant {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  domain      String?
+  logoUrl     String?
+  isActive    Boolean  @default(true)
+  sendingEnabled Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users               User[]
+  whatsappAccounts    WhatsAppAccount[]
+  messageTemplates    MessageTemplate[]
+  campaigns           Campaign[]
+  conversationUsages  ConversationUsage[]
+  auditLogs           AuditLog[]
+  pricingConfigs      PricingConfig[]
+  messageLogs         MessageLog[]
+  rateLimits          TenantRateLimit[]
+  conversations       WhatsAppConversation[]
+  ledgerEntries       TenantLedger[]
+
+  @@map("tenants")
+}
+
+model User {
+  id                String     @id @default(uuid())
+  tenantId          String
+  email             String
+  passwordHash      String
+  firstName         String
+  lastName          String
+  role              UserRole   @default(CLIENT_USER)
+  status            UserStatus @default(PENDING)
+  emailVerified     Boolean    @default(false)
+  emailVerifiedAt   DateTime?
+  lastLoginAt       DateTime?
+  lastLoginIp       String?
+  failedLoginCount  Int        @default(0)
+  lockedUntil       DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  // Relations
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  otps        OTP[]
+  sessions    Session[]
+  auditLogs   AuditLog[]
+  campaigns   Campaign[]
+
+  @@unique([tenantId, email])
+  @@index([email])
+  @@index([tenantId])
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  isValid      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model OTP {
+  id         String    @id @default(uuid())
+  userId     String
+  type       OTPType
+  codeHash   String
+  status     OTPStatus @default(PENDING)
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  maxAttempts Int      @default(3)
+  ipAddress  String?
+  createdAt  DateTime  @default(now())
+  usedAt     DateTime?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type, status])
+  @@map("otps")
+}
+
+model WhatsAppAccount {
+  id                  String               @id @default(uuid())
+  tenantId            String
+  name                String
+  wabaId              String
+  phoneNumberId       String
+  phoneNumber         String
+  accessTokenEncrypted String              @db.Text
+  status              WhatsAppAccountStatus @default(PENDING)
+  qualityRating       String?
+  messagingLimit      String?
+  lastVerifiedAt      DateTime?
+  webhookSecret       String?
+  isDefault           Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  environment         String               @default("SANDBOX")
+
+  // Relations
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  messageTemplates  MessageTemplate[]
+  campaigns         Campaign[]
+  messageEvents     MessageEvent[]
+  conversationUsages ConversationUsage[]
+  messageLogs       MessageLog[]
+  conversations     WhatsAppConversation[]
+
+  @@unique([tenantId, phoneNumberId])
+  @@index([tenantId])
+  @@index([wabaId])
+  @@map("whatsapp_accounts")
+}
+
+model MessageTemplate {
+  id                String         @id @default(uuid())
+  tenantId          String
+  whatsappAccountId String
+  name              String
+  language          String         @default("en")
+  category          TemplateCategory
+  status            TemplateStatus @default(DRAFT)
+  metaTemplateId    String?
+  headerType        String?
+  headerContent     String?        @db.Text
+  bodyContent       String         @db.Text
+  footerContent     String?
+  buttons           Json?
+  variables         Json?
+  rejectionReason   String?
+  submittedAt       DateTime?
+  approvedAt        DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  // Relations
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  whatsappAccount WhatsAppAccount @relation(fields: [whatsappAccountId], references: [id], onDelete: Cascade)
+  campaigns       Campaign[]
+
+  @@unique([tenantId, name, language])
+  @@index([tenantId])
+  @@index([whatsappAccountId])
+  @@index([status])
+  @@map("message_templates")
+}
+
+model Campaign {
+  id                String         @id @default(uuid())
+  tenantId          String
+  whatsappAccountId String
+  templateId        String
+  createdById       String
+  name              String
+  description       String?
+  status            CampaignStatus @default(DRAFT)
+  scheduledAt       DateTime?
+  startedAt         DateTime?
+  completedAt       DateTime?
+  totalContacts     Int            @default(0)
+  sentCount         Int            @default(0)
+  deliveredCount    Int            @default(0)
+  readCount         Int            @default(0)
+  failedCount       Int            @default(0)
+  contactsMetadata  Json?
+  errorMessage      String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  // Billing fields (Phase 4)
+  totalConversations    Int      @default(0)
+  billableConversations Int      @default(0)
+  totalCost             Decimal  @default(0) @db.Decimal(10, 6)
+  costCurrency          String   @default("USD")
+
+  // Relations
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  whatsappAccount WhatsAppAccount @relation(fields: [whatsappAccountId], references: [id], onDelete: Cascade)
+  template        MessageTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  messageEvents    MessageEvent[]
+  campaignJobs     CampaignJob[]
+  campaignMessages CampaignMessage[]
+  conversations    WhatsAppConversation[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("campaigns")
+}
+
+model CampaignJob {
+  id          String   @id @default(uuid())
+  campaignId  String
+  jobId       String?
+  status      String   @default("pending")
+  payload     Json
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(3)
+  error       String?  @db.Text
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([status])
+  @@map("campaign_jobs")
+}
+
+model CampaignMessage {
+  id            String        @id @default(uuid())
+  campaignId    String
+  tenantId      String
+  phone         String
+  payload       Json
+  metaMessageId String?
+  status        MessageStatus @default(QUEUED)
+  retryCount    Int           @default(0)
+  errorMessage  String?       @db.Text
+  sentAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([metaMessageId])
+  @@map("campaign_messages")
+}
+
+model MessageEvent {
+  id                String        @id @default(uuid())
+  whatsappAccountId String
+  campaignId        String?
+  waMessageId       String        @unique
+  recipientPhone    String
+  status            MessageStatus
+  timestamp         DateTime
+  errorCode         String?
+  errorMessage      String?
+  conversationId    String?
+  pricingModel      String?
+  createdAt         DateTime      @default(now())
+
+  // Relations
+  whatsappAccount WhatsAppAccount @relation(fields: [whatsappAccountId], references: [id], onDelete: Cascade)
+  campaign        Campaign?       @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  @@index([whatsappAccountId])
+  @@index([campaignId])
+  @@index([waMessageId])
+  @@index([recipientPhone])
+  @@index([timestamp])
+  @@map("message_events")
+}
+
+model MessageLog {
+  id                String      @id @default(uuid())
+  tenantId          String
+  whatsappAccountId String?
+  recipientPhone    String
+  templateName      String
+  messageId         String?
+  status            MessageStatus
+  environment       String
+  errorMessage      String?     @db.Text
+  createdAt         DateTime    @default(now())
+
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  whatsappAccount WhatsAppAccount? @relation(fields: [whatsappAccountId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([whatsappAccountId])
+  @@index([recipientPhone])
+  @@index([createdAt])
+  @@map("message_logs")
+}
+
+model ConversationUsage {
+  id                String              @id @default(uuid())
+  tenantId          String
+  whatsappAccountId String
+  month             Int
+  year              Int
+  category          ConversationCategory
+  conversationCount Int                 @default(0)
+  estimatedCost     Decimal             @db.Decimal(10, 4)
+  currency          String              @default("USD")
+  isEstimated       Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  // Relations
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  whatsappAccount WhatsAppAccount @relation(fields: [whatsappAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, whatsappAccountId, month, year, category])
+  @@index([tenantId])
+  @@index([month, year])
+  @@map("conversation_usages")
+}
+
+model PricingConfig {
+  id          String              @id @default(uuid())
+  tenantId    String
+  category    ConversationCategory
+  countryCode String
+  pricePerConversation Decimal    @db.Decimal(10, 6)
+  currency    String              @default("USD")
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([category, countryCode])
+  @@map("pricing_configs")
+}
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  tenantId    String
+  userId      String?
+  action      AuditAction
+  entityType  String?
+  entityId    String?
+  oldValue    Json?
+  newValue    Json?
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ==================== PRE-PHASE 4: PRODUCTION HARDENING ====================
+
+model SystemConfig {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_configs")
+}
+
+model TenantRateLimit {
+  id              String    @id @default(uuid())
+  tenantId        String    @unique
+  currentRate     Int       @default(20)
+  successCount    Int       @default(0)
+  failureCount    Int       @default(0)
+  cooldownUntil   DateTime?
+  lastUpdated     DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_rate_limits")
+}
+
+model WebhookEvent {
+  id            String   @id @default(uuid())
+  eventId       String   @unique
+  eventType     String
+  processedAt   DateTime @default(now())
+  payload       Json?
+
+  @@index([eventId])
+  @@index([processedAt])
+  @@map("webhook_events")
+}
+
+// ==================== PHASE 4: BILLING ====================
+
+model WhatsAppConversation {
+  id                  String              @id @default(uuid())
+  tenantId            String
+  whatsappAccountId   String
+  campaignId          String?
+  metaConversationId  String              @unique
+  category            ConversationCategory
+  countryCode         String?
+  recipientPhone      String
+  openedAt            DateTime
+  closedAt            DateTime?
+  billable            Boolean             @default(false)
+  cost                Decimal             @default(0) @db.Decimal(10, 6)
+  currency            String              @default("USD")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  // Relations
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  whatsappAccount WhatsAppAccount @relation(fields: [whatsappAccountId], references: [id], onDelete: Cascade)
+  campaign        Campaign?       @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([whatsappAccountId])
+  @@index([campaignId])
+  @@index([category])
+  @@index([openedAt])
+  @@map("whatsapp_conversations")
+}
+
+model MetaPricing {
+  id                String              @id @default(uuid())
+  countryCode       String
+  category          ConversationCategory
+  price             Decimal             @db.Decimal(10, 6)
+  currency          String              @default("USD")
+  effectiveFrom     DateTime            @default(now())
+  effectiveTo       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@unique([countryCode, category, effectiveFrom])
+  @@index([countryCode, category])
+  @@map("meta_pricing")
+}
+
+model TenantLedger {
+  id              String   @id @default(uuid())
+  tenantId        String
+  referenceType   String   // CONVERSATION, CAMPAIGN, ADJUSTMENT
+  referenceId     String
+  amount          Decimal  @db.Decimal(10, 6)
+  currency        String   @default("USD")
+  description     String?
+  createdAt       DateTime @default(now())
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([referenceType, referenceId])
+  @@index([tenantId])
+  @@index([referenceType])
+  @@index([createdAt])
+  @@map("tenant_ledger")
+}

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <style>
+    .st0{fill:#25D366;} 
+    .st1{fill:#FFFFFF;}
+    .st2{fill:#128C7E;}
+    .st3{fill:#075E54;}
+    .st4{fill:rgba(37,211,102,0.3);}
+  </style>
+  
+  <!-- Background shape -->
+  <path class="st4" d="M642.5,222.5c70.8,74.2,73.5,205.8,24.1,285.9c-49.5,80.1-151,108.6-238.3,87.8 c-87.3-20.8-160.4-91-196.6-175.1c-36.2-84.1-35.4-182,15.4-238.6c50.8-56.6,141.5-71.9,221.1-54.7 C548,144.9,616.4,194.5,642.5,222.5z"/>
+  
+  <!-- Phone outline -->
+  <rect x="250" y="100" width="300" height="450" rx="20" fill="#fafafa" stroke="#e0e0e0" stroke-width="5"/>
+  
+  <!-- Phone screen -->
+  <rect x="265" y="120" width="270" height="410" rx="5" fill="#ffffff"/>
+  
+  <!-- WhatsApp messages UI -->
+  <rect x="265" y="120" width="270" height="60" rx="5" fill="#128C7E"/>
+  <circle cx="295" cy="150" r="15" fill="#ffffff"/>
+  <text x="325" y="155" font-family="Arial" font-size="14" fill="#ffffff">WhatsApp Marketing</text>
+  
+  <!-- Messages -->
+  <g>
+    <!-- Outgoing message 1 -->
+    <rect x="335" y="200" width="180" height="40" rx="10" fill="#dcf8c6"/>
+    <text x="350" y="223" font-family="Arial" font-size="12" fill="#303030">Hello! Special offer today!</text>
+    
+    <!-- Incoming message -->
+    <rect x="285" y="260" width="180" height="40" rx="10" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="300" y="283" font-family="Arial" font-size="12" fill="#303030">Tell me more about it!</text>
+    
+    <!-- Outgoing message 2 -->
+    <rect x="335" y="320" width="180" height="60" rx="10" fill="#dcf8c6"/>
+    <text x="350" y="343" font-family="Arial" font-size="12" fill="#303030">20% off on all products with</text>
+    <text x="350" y="363" font-family="Arial" font-size="12" fill="#303030">code WELCOME20</text>
+    
+    <!-- Incoming message 2 -->
+    <rect x="285" y="400" width="180" height="40" rx="10" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="300" y="423" font-family="Arial" font-size="12" fill="#303030">Amazing! I'll order now.</text>
+  </g>
+  
+  <!-- Flying message icons -->
+  <g transform="translate(50,50)">
+    <circle cx="150" cy="180" r="25" fill="#25D366"/>
+    <path class="st1" d="M150,165c-8.3,0-15,6.7-15,15s6.7,15,15,15s15-6.7,15-15S158.3,165,150,165z M157.5,187.8 c-0.4,0.6-0.8,1.1-1.3,1.5c-0.5,0.4-1.1,0.7-1.7,0.9c-0.6,0.2-1.3,0.3-2,0.3c-1.1,0-2.1-0.2-3.1-0.7c-1-0.5-1.9-1.1-2.7-1.9 c-0.8-0.8-1.5-1.6-2-2.5c-0.6-0.9-1-1.9-1-2.9c0-0.8,0.2-1.5,0.5-2.1c0.3-0.6,0.8-1.2,1.4-1.6c0.7-0.5,1.5-0.7,2.3-0.7 c0.3,0,0.6,0.1,0.9,0.2c0.3,0.1,0.5,0.3,0.7,0.6l1.7,2.4c0.2,0.3,0.3,0.5,0.3,0.8c0,0.3-0.1,0.6-0.3,0.8l-0.6,0.6 c-0.1,0.1-0.1,0.2-0.1,0.3c0,0.1,0,0.2,0.1,0.3c0.2,0.4,0.5,0.7,0.8,1c0.3,0.3,0.7,0.6,1,0.8c0.4,0.2,0.7,0.4,1.1,0.6 c0.4,0.1,0.7,0.2,1,0.2c0.1,0,0.2,0,0.3-0.1c0.1-0.1,0.2-0.1,0.3-0.2l0.6-0.6c0.2-0.2,0.5-0.3,0.8-0.3c0.3,0,0.5,0.1,0.8,0.2 l2.4,1.7c0.3,0.2,0.5,0.4,0.6,0.7c0.1,0.3,0.2,0.5,0.2,0.8C158.2,186.5,158,187.2,157.5,187.8z"/>
+  </g>
+  
+  <g transform="translate(500,120)">
+    <circle cx="150" cy="180" r="20" fill="#25D366"/>
+    <path class="st1" d="M150,168c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S156.6,168,150,168z M156,186.3 c-0.3,0.5-0.6,0.8-1,1.2c-0.4,0.4-0.9,0.6-1.4,0.7c-0.5,0.2-1,0.2-1.6,0.2c-0.8,0-1.7-0.2-2.5-0.6c-0.8-0.4-1.5-0.9-2.1-1.5 c-0.6-0.6-1.2-1.3-1.6-2c-0.5-0.7-0.8-1.5-0.8-2.3c0-0.6,0.1-1.2,0.4-1.7c0.3-0.5,0.6-0.9,1.1-1.3c0.6-0.4,1.2-0.6,1.8-0.6 c0.2,0,0.5,0,0.7,0.1c0.2,0.1,0.4,0.2,0.6,0.4l1.3,1.9c0.1,0.2,0.2,0.4,0.2,0.6c0,0.2-0.1,0.4-0.2,0.6l-0.5,0.5 c-0.1,0.1-0.1,0.1-0.1,0.2c0,0.1,0,0.1,0.1,0.2c0.1,0.3,0.4,0.6,0.7,0.8c0.3,0.2,0.5,0.5,0.8,0.6c0.3,0.2,0.6,0.3,0.9,0.4 c0.3,0.1,0.5,0.2,0.8,0.2c0.1,0,0.2,0,0.2-0.1c0.1,0,0.1-0.1,0.2-0.1l0.5-0.5c0.2-0.2,0.4-0.2,0.6-0.2c0.2,0,0.4,0.1,0.6,0.2 l1.9,1.3c0.2,0.2,0.4,0.3,0.4,0.5c0.1,0.2,0.1,0.4,0.1,0.7C156.5,185.3,156.3,185.8,156,186.3z"/>
+  </g>
+
+  <!-- Charts/Graphs -->
+  <g transform="translate(80,350)">
+    <rect x="0" y="0" width="160" height="100" rx="10" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="2"/>
+    <text x="50" y="20" font-family="Arial" font-size="12" font-weight="bold" fill="#303030">Engagement</text>
+    
+    <!-- Bar chart -->
+    <rect x="20" y="30" width="20" height="50" fill="#25D366"/>
+    <rect x="50" y="40" width="20" height="40" fill="#25D366"/>
+    <rect x="80" y="35" width="20" height="45" fill="#25D366"/>
+    <rect x="110" y="25" width="20" height="55" fill="#25D366"/>
+  </g>
+
+  <!-- Connected dots -->
+  <g transform="translate(450,400)">
+    <circle cx="30" cy="30" r="25" fill="#128C7E"/>
+    <circle cx="90" cy="30" r="25" fill="#25D366"/>
+    <circle cx="150" cy="30" r="25" fill="#075E54"/>
+    
+    <line x1="55" y1="30" x2="65" y2="30" stroke="#25D366" stroke-width="3"/>
+    <line x1="115" y1="30" x2="125" y2="30" stroke="#25D366" stroke-width="3"/>
+    
+    <text x="20" y="35" font-family="Arial" font-size="12" fill="#ffffff" text-anchor="middle">Send</text>
+    <text x="90" y="35" font-family="Arial" font-size="12" fill="#ffffff" text-anchor="middle">Deliver</text>
+    <text x="150" y="35" font-family="Arial" font-size="12" fill="#ffffff" text-anchor="middle">Track</text>
+  </g>
+</svg>
