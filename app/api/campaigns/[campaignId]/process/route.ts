@@ -227,7 +227,7 @@ export async function POST(
         continue;
       }
 
-      const payload = msg.payload as MessagePayload;
+      const payload = msg.payload as unknown as MessagePayload;
 
       try {
         const components = formatTemplateComponents(payload.variables);

@@ -122,9 +122,9 @@ async function checkWebhookEvents(tenantId: string): Promise<boolean> {
     console.log('\n🔍 Checking webhook events...');
 
     const recentEvents = await prisma.webhookEvent.findMany({
-      where: { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+      where: { processedAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
       take: 5,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { processedAt: 'desc' },
     });
 
     if (recentEvents.length === 0) {
@@ -214,7 +214,7 @@ async function main() {
 
     // Get tenant
     const email = await question('Enter your email: ');
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: { email },
       select: { tenantId: true, firstName: true },
     });
